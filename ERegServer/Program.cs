@@ -36,12 +36,6 @@ internal class Program
 
         var app = builder.Build();
 
-        app.UseCors(x => x
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowAnyOrigin() // allow any origin
-                .AllowCredentials()); // allow credentials
-
         app.UseHttpsRedirection();
 
         app.Run();

@@ -32,23 +32,39 @@ namespace ERegWeb.Controllers
                 return BadRequest("Invalid email format");
             }
 
-            string generatedCode = EmailCodeGenerator.GenerateCode();
-            DateTime expiration = DateTime.UtcNow.AddMinutes(30);
+            var emailCode = _dataContext.EmailCodesGenerated
+                .FirstOrDefault(x => x.Email == request.Email);
 
-            var emailCode = new EmailCodeGenerated
+            if (emailCode == null)
             {
-                Email = request.Email,
-                Code = generatedCode,
-                Expiration = expiration
-            };
-            _dataContext.EmailCodesGenerated.Add(emailCode);
+                string generatedCode = EmailCodeGenerator.GenerateCode();
+                DateTime expiration = DateTime.UtcNow.AddMinutes(30);
+
+                emailCode = new EmailCodeGenerated
+                {
+                    Email = request.Email,
+                    Code = generatedCode,
+                    Expiration = expiration
+                };
+
+                _dataContext.EmailCodesGenerated.Add(emailCode);
+            }
+            else
+            {
+                if (emailCode.Expiration < DateTime.UtcNow)
+                {
+                    emailCode.Code = EmailCodeGenerator.GenerateCode();
+                    emailCode.Expiration = DateTime.UtcNow.AddMinutes(30);
+                }
+            }
+
             _dataContext.SaveChanges();
 
             var message = new EmailCodeMessage
             {
                 Email = request.Email,
-                GeneratedCode = generatedCode,
-                Expiration = expiration
+                GeneratedCode = emailCode.Code,
+                Expiration = (DateTime)emailCode.Expiration
             };
             _publishEndpoint.Publish(message);
 
@@ -61,6 +77,7 @@ namespace ERegWeb.Controllers
         [HttpPost]
         public IActionResult ValidateEmailCode([FromBody] ValidateEmailCodeRequest request)
         {
+            //TODO коды
             var emailCode = _dataContext.EmailCodesGenerated
                 .FirstOrDefault(x => x.Email == request.Email);
 
@@ -80,6 +97,7 @@ namespace ERegWeb.Controllers
             }
 
             _dataContext.EmailCodesGenerated.Remove(emailCode);
+            _dataContext.SaveChanges();
 
             var validationMessage = new ValidatedEmailCodeMessage
             {

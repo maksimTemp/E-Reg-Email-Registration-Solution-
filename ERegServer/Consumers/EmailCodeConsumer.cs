@@ -35,9 +35,9 @@ namespace ERegServer.Consumers
 
             try
             {
-                var smtpClient = new SmtpClient(smtpServer)
+                var smtpClient = new SmtpClient(smtpServer, smtpPort)
                 {
-                    Port = smtpPort,
+
                     Credentials = new NetworkCredential(smtpUsername, smtpPassword),
                     EnableSsl = false, // Enable SSL if necessary
                 };
@@ -46,7 +46,7 @@ namespace ERegServer.Consumers
                 {
                     From = new MailAddress(smtpUsername),
                     Subject = "Код подтверждения",
-                    Body = $"Ваш код подтверждения: {message.GeneratedCode}",
+                    Body = $"<h1>Ваш код подтверждения: {message.GeneratedCode}<h1>",
                     IsBodyHtml = true,
                 };
 
