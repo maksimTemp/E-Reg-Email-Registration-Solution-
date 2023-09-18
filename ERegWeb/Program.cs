@@ -3,6 +3,7 @@ using ERegServer.DataContext;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.RateLimiting;
 
 internal class Program
@@ -14,6 +15,7 @@ internal class Program
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         builder.Services.AddDbContext<ERegDataContext>(options => options.UseSqlServer(connectionString));
+
 
         builder.Services.AddCors(options =>
         {
@@ -57,6 +59,12 @@ internal class Program
         });
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ERegDataContext>();
+            dbContext.Database.Migrate();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

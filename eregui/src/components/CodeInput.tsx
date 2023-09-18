@@ -16,7 +16,7 @@ function CodeInput({ onConfirm, email }: CodeInputProps) {
     return (
         <form className="registration-card" onSubmit={handleSubmit}>
             <p>Write the code that was emailed to you:</p>
-            <span className="email-address">{email}</span>
+            <label className="email-address">{email}</label>
             <input
                 type="text"
                 value={code}

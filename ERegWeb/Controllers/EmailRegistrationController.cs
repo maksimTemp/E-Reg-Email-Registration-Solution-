@@ -4,6 +4,7 @@ using ERegWeb.Models.Requests;
 using ERegWeb.Tools;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SharedLibrary.Messages;
 
 namespace ERegWeb.Controllers
@@ -11,12 +12,13 @@ namespace ERegWeb.Controllers
     [Route("[controller]/[action]")]
     public class EmailRegistrationController : ControllerBase
     {
+        private readonly ILogger<EmailRegistrationController> _logger;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly ERegDataContext _dataContext;
 
-        public EmailRegistrationController(IPublishEndpoint publishEndpoint, ERegDataContext dataContext)
+        public EmailRegistrationController(ILogger<EmailRegistrationController> logger, IPublishEndpoint publishEndpoint, ERegDataContext dataContext)
         {
-
+            _logger = logger;
             _publishEndpoint = publishEndpoint;
             _dataContext = dataContext;
         }
@@ -52,6 +54,7 @@ namespace ERegWeb.Controllers
                 }
                 catch(Exception ex)
                 {
+                    _logger.LogError($"Не удалось добавить новую запись в базу данных");
                     return StatusCode(500, "An internal problem has occurred, try again later");
                 }
             }
@@ -69,6 +72,7 @@ namespace ERegWeb.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Не удалось сохранить новый значения в БД");
                 return StatusCode(500, "An internal problem has occurred, try again later");
             };
 
@@ -89,7 +93,6 @@ namespace ERegWeb.Controllers
         [HttpPost]
         public IActionResult ValidateEmailCode([FromBody] ValidateEmailCodeRequest request)
         {
-            //TODO коды
             var emailCode = _dataContext.EmailCodesGenerated
                 .FirstOrDefault(x => x.Email == request.Email);
 
@@ -115,7 +118,7 @@ namespace ERegWeb.Controllers
             }
             catch (Exception )
             {
-                //TODO LOG
+                _logger.LogError($"Не удалось удалить запись из базы данных");
             }
             
 
