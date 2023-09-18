@@ -1,0 +1,46 @@
+/* styles.css */
+body {
+    background-color: #e6e6fa; /* Нежно фиолетовый фон страницы */
+}
+
+.registration-card {
+    background-color: rgba(255, 255, 255, 0.8); /* Полупрозрачная карточка */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 300px;
+    margin: 0 auto;
+    backdrop-filter: blur(10px); /* Блюр-эффект */
+}
+
+    .registration-card h2 {
+        font-size: 24px;
+        color: #333; /* Цвет заголовка */
+    }
+
+    .registration-card input {
+        width: 80%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc; /* Добавляем рамку вокруг полей ввода */
+        border-radius: 5px;
+    }
+
+    .registration-card button {
+        background-color: #007bff; /* Цвет кнопок */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
+}
