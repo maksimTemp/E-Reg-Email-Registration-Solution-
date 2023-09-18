@@ -46,8 +46,14 @@ namespace ERegWeb.Controllers
                     Code = generatedCode,
                     Expiration = expiration
                 };
-
-                _dataContext.EmailCodesGenerated.Add(emailCode);
+                try
+                {
+                    _dataContext.EmailCodesGenerated.Add(emailCode);
+                }
+                catch(Exception ex)
+                {
+                    return StatusCode(500, "An internal problem has occurred, try again later");
+                }
             }
             else
             {
@@ -57,8 +63,14 @@ namespace ERegWeb.Controllers
                     emailCode.Expiration = DateTime.UtcNow.AddMinutes(30);
                 }
             }
-
-            _dataContext.SaveChanges();
+            try
+            {
+                _dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An internal problem has occurred, try again later");
+            };
 
             var message = new EmailCodeMessage
             {
@@ -96,8 +108,16 @@ namespace ERegWeb.Controllers
                 return BadRequest("Invalid code");
             }
 
-            _dataContext.EmailCodesGenerated.Remove(emailCode);
-            _dataContext.SaveChanges();
+            try
+            {
+                _dataContext.EmailCodesGenerated.Remove(emailCode);
+                _dataContext.SaveChanges();
+            }
+            catch (Exception )
+            {
+                //TODO LOG
+            }
+            
 
             var validationMessage = new ValidatedEmailCodeMessage
             {
